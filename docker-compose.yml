@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: qa
+      MONGO_INITDB_ROOT_PASSWORD: qa
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d # Montando a pasta do script
+
+  api:
+    build: .
+    container_name: node_api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    environment:
+      MONGO_URL: "mongodb://qa:qa@mongo:27017/UsersDB?authSource=admin"
+
+volumes:
+  mongo_data:
